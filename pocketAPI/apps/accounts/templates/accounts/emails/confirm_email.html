@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <h1> Hello, {{ user.username }} </h1>
+        <p>
+            For using our API you need to confirm your email with link:
+            <a href="{% if request.is_secure %}https{% else %}http{% endif %}://{{ current_site.domain }}{% url 'accounts:confirm_email' token=user.token %}">confirm</a>
+        </p>
+        <p>
+            Thank you!
+            <a href="{{ current_site.domain }}">{{ current_site.name }}</a>
+        </p>
+    </body>
+</html>
+
+
