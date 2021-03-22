@@ -28,11 +28,11 @@ class AuthenticateUserToken(serializers.Serializer):
     """
         Serializer for authenticate user and get him access and refresh tokens.
     """
-    login = serializers.CharField()
+    username = serializers.CharField()
     password = serializers.CharField()
 
     def validate(self, attrs):
-        login = attrs['login']
+        login = attrs['username']
         password = attrs['password']
         user = authenticate(username=login, password=password)
         if user:
