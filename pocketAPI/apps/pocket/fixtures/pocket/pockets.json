@@ -1,0 +1,60 @@
+[
+  {
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+      "username": "test",
+      "email": "test@test.com",
+      "password": "123"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "pk": 2,
+    "fields": {
+      "username": "test2",
+      "email": "test2@test.com",
+      "password": "123"
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "name": "test_1",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00"
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "name": "test_2",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00"
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 3,
+    "fields": {
+      "user": 2,
+      "name": "test_3",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00"
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 4,
+    "fields": {
+      "user": 2,
+      "name": "test_4",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00"
+    }
+  }
+]

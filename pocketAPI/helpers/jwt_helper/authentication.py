@@ -19,22 +19,7 @@ class JWTAuthentication(BaseAuthentication):
         token = headers.get(auth_header_name, '')
         if token:
             user = AccessToken.get_user_from_token(token)
-            return user
-
-    def get_user(self, token):
-        """
-            Get user id from token and return user object
-        """
-        user_id = token.get('user')
-        try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExists():
-            raise AuthenticationFailed(_('User not found'))
-        else:
-            if user.if_confirmed:
-                return user
-            else:
-                raise AuthenticationFailed(_('User did not activate profile'))
+            return user, token
 
 
 

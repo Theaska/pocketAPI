@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     # apps
     'apps.accounts',
+    'apps.pocket',
 
     # helpers
     'helpers.jwt_helper',
@@ -140,8 +141,14 @@ STATIC_ROOT = 'static/'
 STATIC_URL = '/static/'
 
 # EMAIL SETTINGS
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = os.environ['EMAIL_HOST']
 EMAIL_PORT = os.environ['EMAIL_PORT']
 EMAIL_USE_SSL = os.environ['EMAIL_USE_SSL']
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+
+# redis
+REDIS_HOST = os.environ['REDIS_HOST']
+REDIS_PORT = os.environ['REDIS_PORT']
+REDIS_PREFIX = 'pocketapi'

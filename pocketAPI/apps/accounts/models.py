@@ -18,7 +18,7 @@ class User(AbstractUser):
         is_confirmed:           if user confirmed his email address
     """
     email = models.EmailField(_('email address'), unique=True)
-    token = models.CharField(_('confirm token'), null=True, blank=True, max_length=256)
+    token = models.CharField(_('confirm email token'), null=True, blank=True, max_length=256)
     refresh_token_hash = models.CharField(max_length=256, blank=True, null=True)
     is_confirmed = models.BooleanField(_('confirmed email'), default=False, help_text=_('True if user confirmed email'))
 

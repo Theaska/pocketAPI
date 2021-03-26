@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls', namespace='accounts')),
     path('tokens/', include('jwt_helper.urls', namespace='jwt')),
+    path('pocket/', include('pocket.urls', namespace='pocket')),
 ]
