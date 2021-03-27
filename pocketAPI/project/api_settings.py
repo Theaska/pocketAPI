@@ -5,6 +5,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'helpers.jwt_helper.authentication.JWTAuthentication',
     ],
+    'DEFAULT_FILTER_BACKENDS': ['helpers.filters.CustomFilterBackend'],
     'NON_FIELD_ERRORS_KEY': 'errors',
 }
 AUTH_HEADER_NAME = 'Access-Token'
@@ -19,5 +20,6 @@ SWAGGER_SETTINGS = {
             'authorizationUrl': 'accounts:login',
             'tokenUrl': 'accounts:token',
         }
-    }
+    },
+    'PERSIST_AUTH': True
 }

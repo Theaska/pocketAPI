@@ -10,7 +10,7 @@ router = routers.SimpleRouter()
 router.register('', PocketAPIView, basename='pocket')
 
 urlpatterns = [
-    path('send-deletion-code/<uuid:uuid>', SendConfirmationDeleteCode.as_view(), name='send-deletion-code'),
+    path('<uuid:uuid>/send-deletion-code/', SendConfirmationDeleteCode.as_view(), name='send-deletion-code'),
 ]
 
 urlpatterns += router.urls

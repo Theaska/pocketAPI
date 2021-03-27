@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
-from django.db import models
+from django.core.validators import MinValueValidator
+from django.db import models, transaction
 import uuid
 from django.utils.translation import ugettext_lazy as _
 
@@ -31,6 +32,7 @@ class Pocket(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     name = models.CharField(_('name of pocket'), max_length=128)
     description = models.TextField(_('description of pocket'), max_length=512, blank=True, null=True)
+    balance = models.FloatField(default=0, validators=[MinValueValidator(0), ])
 
     # we will not delete pockets, just put them to archive
     is_archived = models.BooleanField(_('in archive'), default=False)
@@ -61,3 +63,15 @@ class Pocket(models.Model):
     def delete(self, using=None, keep_parents=False):
         self.is_archived = True
         self.save()
+
+    @transaction.atomic()
+    def refill(self, value: float):
+        self.balance += value
+        self.save()
+
+    @transaction.atomic()
+    def debit(self, value: float):
+        if self.balance >= value:
+            self.balance -= value
+        else:
+            raise ValueError('debit value is more than balance')

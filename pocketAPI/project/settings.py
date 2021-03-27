@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # apps
     'apps.accounts',
     'apps.pocket',
+    'apps.transactions',
 
     # helpers
     'helpers.jwt_helper',
@@ -152,3 +153,7 @@ EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
 REDIS_HOST = os.environ['REDIS_HOST']
 REDIS_PORT = os.environ['REDIS_PORT']
 REDIS_PREFIX = 'pocketapi'
+
+# validation codes settings
+VALIDATION_CODE_LENGTH = 5
+VALIDATION_CODE_LIFETIME = 60*5  # how many seconds will be save confirmation code in redis

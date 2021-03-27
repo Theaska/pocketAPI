@@ -1,22 +1,23 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from django.conf import settings
 
 from .helpers import get_deletion_pocket_code
 from .models import Pocket
-from .conf import VALIDATION_CODE_LENGTH
 
 
 class PocketSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     uuid = serializers.UUIDField(read_only=True)
+    balance = serializers.FloatField(read_only=True)
 
     class Meta:
         model = Pocket
-        fields = ('id', 'uuid', 'name', 'description', 'user')
+        fields = ('id', 'uuid', 'name', 'description', 'user', 'balance')
 
 
 class ConfirmDeletionSerializer(serializers.Serializer):
-    code = serializers.CharField(min_length=VALIDATION_CODE_LENGTH, max_length=VALIDATION_CODE_LENGTH)
+    code = serializers.CharField(min_length=settings.VALIDATION_CODE_LENGTH, max_length=settings.VALIDATION_CODE_LENGTH)
 
     def __init__(self, pocket=None, *args, **kwargs):
         self.pocket = pocket
