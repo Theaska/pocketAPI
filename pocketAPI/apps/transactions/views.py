@@ -6,13 +6,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from django.conf import settings
-import coreapi
 
 from pocket.helpers import generate_code
 from serializers_helpers import MessageSerializer
 from transactions.exceptions import TransactionError
 from transactions.helpers import save_confirmation_transaction_code
-from transactions.models import PocketTransaction
+from transactions.models import PocketTransaction, TransactionStatus
 from transactions.serializers import TransactionSerializer, ConfirmTransactionSerializer
 import transactions.permissions as transaction_permissions
 
@@ -37,8 +36,16 @@ class TransactionViewSet(mixins.CreateModelMixin,
     }
 
     def get_queryset(self):
-        queryset = PocketTransaction.objects.filter(pocket__user=self.request.user)
+        queryset = PocketTransaction.objects.visible().filter(pocket__user=self.request.user)
         return queryset
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            self.perform_destroy(instance)
+        except TransactionError as te:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'errors': [str(te), ]})
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ConfirmTransaction(GenericAPIView):
@@ -67,7 +74,8 @@ class ConfirmTransaction(GenericAPIView):
                 transaction.cancel()
                 return Response({'error': str(er)}, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(MessageSerializer({'message': 'Your transaction have confirmed'}))
+                message = MessageSerializer({'message': 'Your transaction have confirmed'})
+                return Response(message.data)
 
 
 class SendConfirmationCode(GenericAPIView):
@@ -88,6 +96,6 @@ class SendConfirmationCode(GenericAPIView):
         confirmation_code = generate_code(length=settings.VALIDATION_CODE_LENGTH)
         save_confirmation_transaction_code(transaction_uuid=instance.uuid, code=confirmation_code)
         instance.send_confirmation_code(confirmation_code)
-
+        instance.change_status(TransactionStatus.IN_PROCESS)
         message = self.serializer_class({'message': "We sent confirmation code to your email"})
         return Response(message.data)

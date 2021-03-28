@@ -11,57 +11,30 @@ from django.utils.translation import ugettext_lazy as _
 from email_helpers import create_email_template
 from pocket.models import Pocket
 from .exceptions import TransactionError
-
-
-class ActionTransactions(IntEnum):
-    REFILL = 1  # пополнение
-    DEBIT = 2  # списание
-
-    @classmethod
-    def choices(cls):
-        return tuple((obj.value, obj.name) for obj in cls)
-
-    @classmethod
-    def dict(cls):
-        return dict(cls.choices())
-
-
-class TransactionStatus(IntEnum):
-    CREATED = 1
-    IN_PROCESS = 2
-    FINISHED = 3
-    CANCELLED = 4
-
-    @classmethod
-    def choices(cls):
-        return ((obj.value, obj.name) for obj in cls)
-
-    @classmethod
-    def dict(cls):
-        return dict(cls.choices())
+from .helpers import StatusMixin, TransactionStatus, ActionTransactions
 
 
 class TransactionQuerySet(models.QuerySet):
-    def filter(self, *args, **kwargs):
-        return super().filter(pocket__is_archived=False, *args, **kwargs)
+    def visible(self):
+        return self.filter(pocket__is_archived=False)
 
     def active(self):
-        return self.filter(Q(status=TransactionStatus.CREATED) | Q(status=TransactionStatus.IN_PROCESS))
+        return self.visible().filter(Q(status=TransactionStatus.CREATED) | Q(status=TransactionStatus.IN_PROCESS))
 
     def created(self):
-        return self.filter(status=TransactionStatus.CREATED)
+        return self.visible().filter(status=TransactionStatus.CREATED)
 
     def in_progress(self):
-        return self.filter(status=TransactionStatus.IN_PROCESS)
+        return self.visible().filter(status=TransactionStatus.IN_PROCESS)
 
     def finished(self):
-        return self.filter(status=TransactionStatus.FINISHED)
+        return self.visible().filter(status=TransactionStatus.FINISHED)
 
     def cancelled(self):
-        return self.filter(status=TransactionStatus.CANCELLED)
+        return self.visible().filter(status=TransactionStatus.CANCELLED)
 
 
-class PocketTransaction(models.Model):
+class PocketTransaction(StatusMixin):
     pocket = models.ForeignKey(Pocket, verbose_name=_('Pocket'), on_delete=models.CASCADE, related_name='transactions')
     uuid = models.UUIDField(_('UUID'), default=uuid.uuid4, unique=True)
     sum = models.FloatField(_('sum'), validators=[MinValueValidator(0), MaxValueValidator(100000)])
@@ -69,62 +42,80 @@ class PocketTransaction(models.Model):
         _('action'),
         choices=ActionTransactions.choices()
     )
-    status = models.PositiveIntegerField(
-        _('status'),
-        choices=TransactionStatus.choices(),
-        default=TransactionStatus.CREATED
-    )
     date_created = models.DateTimeField(_('date created'), auto_now_add=True)
     date_updated = models.DateTimeField(_('date updated'), auto_now=True)
     comment = models.TextField(_('comment'), blank=True, null=True)
 
     objects = TransactionQuerySet.as_manager()
 
-    @property
-    def status_name(self):
-        return TransactionStatus.dict()[self.status]
+    @transaction.atomic()
+    def delete(self, using=None, keep_parents=False):
+        if self.status != TransactionStatus.CANCELLED:
+            self.cancel()
+        self.delete(using, keep_parents)
 
     @property
     def action_name(self):
         return ActionTransactions.dict()[self.action]
 
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.pocket.is_archived:
-            raise TransactionError('Can not create transaction for archived pocket')
-        super().save(force_insert, force_update, using, update_fields)
-
-    @transaction.atomic
     def activate(self):
-        if self.status == TransactionStatus.FINISHED or self.status == TransactionStatus.CANCELLED:
-            raise TransactionError('Can not activate transaction with status {}'.format(self.status_name))
+        """
+            Activate transaction. Refill or debit pocket with transaction sum and set status as FINISHED.
+            Can activate ONLY Confirmed transaction for non archived pocket.
+        """
+        if self.status == TransactionStatus.FINISHED:
+            raise TransactionError('This transaction has finished already')
+
+        if self.status != TransactionStatus.CONFIRMED:
+            raise TransactionError(
+                'Can activate transaction only with status {}'.format(TransactionStatus.CONFIRMED.name)
+            )
         elif self.pocket.is_archived:
             raise TransactionError('Can not activate transaction for archived pocket')
 
         try:
             if self.action == ActionTransactions.DEBIT:
                 self.pocket.debit(self.sum)
-            else:
+            elif self.action == ActionTransactions.REFILL:
                 self.pocket.refill(self.sum)
         except Exception as exc:
+            self.set_cancelled()
+            self.save()
             raise TransactionError(str(exc))
         else:
-            self.action = TransactionStatus.FINISHED
+            self.pocket.save()
+            self.set_finished()
             self.save()
 
-    @transaction.atomic
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.pocket.is_archived:
+            raise TransactionError('Can not create transaction for archived pocket')
+        super().save(force_insert, force_update, using, update_fields)
+
+    @transaction.atomic()
+    def refund(self):
+        """
+            Refund money from transaction.
+            If action was DEBIT then refill money.
+            If action was REFILL then debit money.
+            If pocket balance less than debit money, then raise TransactionError.
+        """
+        if self.action == ActionTransactions.DEBIT:
+            self.pocket.refill(self.sum)
+            self.pocket.save()
+        elif self.action == ActionTransactions.REFILL:
+            try:
+                self.pocket.debit(self.sum)
+                self.pocket.save()
+            except ValueError:
+                raise TransactionError('Not enough money for refund.')
+
+    @transaction.atomic()
     def cancel(self):
-        if not self.status == TransactionStatus.FINISHED:
-            self.status = TransactionStatus.CANCELLED
-            self.save()
-        else:
-            raise TransactionError('Can not cancel finished transaction')
-
-    @transaction.atomic
-    def delete(self, using=None, keep_parents=False):
-        if self.status == TransactionStatus.CANCELLED or self.status == TransactionStatus.FINISHED:
-            super().delete(using, keep_parents)
-        else:
-            raise TransactionError('Can delete transaction only with status CANCELLED or FINISHED')
+        if self.status == TransactionStatus.FINISHED:
+            self.refund()
+        self.set_cancelled()
+        self.save()
 
     def send_confirmation_code(self, code):
         """

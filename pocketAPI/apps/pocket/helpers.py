@@ -19,7 +19,6 @@ def generate_code(length):
 def save_deletion_pocket_code(pocket_uuid, code):
     key = f'deletion-pocket:{pocket_uuid}:{settings.SECRET_KEY}'
     key_hash = hashlib.md5(key.encode('utf-8')).hexdigest()
-    print(settings.VALIDATION_CODE_LIFETIME)
     save_to_redis(key_hash, code, time=settings.VALIDATION_CODE_LIFETIME)
 
 

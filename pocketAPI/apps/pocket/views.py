@@ -39,24 +39,6 @@ class PocketAPIView(ModelViewSet):
             pocket.delete()
 
 
-# class PocketTransaction(GenericAPIView):
-#     """
-#         Get transaction for pocket with uuid.
-#     """
-#     permission_classes = [permissions.IsAuthenticated, pocket_permissions.IsOwner]
-#     lookup_field = 'uuid'
-#     lookup_url_kwarg = 'uuid'
-#     serializer_class = TransactionSerializer
-#
-#     def get_queryset(self):
-#         return Pocket.objects.active().filter(user=self.request.user)
-#
-#     def get(self, request, uuid):
-#         pocket = self.get_object()
-#         serializer = self.get_serializer(pocket.transactions, many=True)
-#         return Response(serializer.data)
-
-
 class SendConfirmationDeleteCode(GenericAPIView):
     """
         Send code for confirm deleting pocket with uuid.

@@ -67,7 +67,6 @@ class Pocket(models.Model):
     @transaction.atomic()
     def refill(self, value: float):
         self.balance += value
-        self.save()
 
     @transaction.atomic()
     def debit(self, value: float):

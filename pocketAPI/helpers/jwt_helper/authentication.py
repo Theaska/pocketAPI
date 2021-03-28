@@ -1,9 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext_lazy as _
 from rest_framework.authentication import BaseAuthentication
 
-from .exceptions import AuthenticationFailed
+from jwt_helper.exceptions import AuthenticationFailed, TokenException
 from jwt_helper.token import AccessToken
 
 User = get_user_model()
@@ -18,7 +17,10 @@ class JWTAuthentication(BaseAuthentication):
         auth_header_name = self.authenticate_header(request)
         token = headers.get(auth_header_name, '')
         if token:
-            user = AccessToken.get_user_from_token(token)
+            try:
+                user = AccessToken.get_user_from_token(token)
+            except TokenException as exc:
+                raise AuthenticationFailed(str(exc))
             return user, token
 
 

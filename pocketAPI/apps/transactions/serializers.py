@@ -10,6 +10,10 @@ class TransactionSerializer(serializers.ModelSerializer):
     uuid = serializers.UUIDField(read_only=True)
     action = serializers.ChoiceField(choices=ActionTransactions.choices(), default=ActionTransactions.REFILL,
                                      help_text=str(ActionTransactions.choices()))
+    action_name = serializers.SerializerMethodField()
+
+    def get_action_name(self, obj):
+        return obj.action_name
 
     def get_status(self, obj):
         return obj.status_name
@@ -25,6 +29,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             pocket = attrs['pocket']
             if pocket.balance < attrs['sum']:
                 raise ValidationError('Not enough money on pocket balance for creating transaction')
+        return attrs
 
     class Meta:
         model = PocketTransaction
@@ -52,4 +57,6 @@ class ConfirmTransactionSerializer(serializers.Serializer):
         code = get_confirmation_transaction_code(self.transaction.uuid)
         if not code == attrs['code']:
             raise ValidationError('Invalid code')
+        else:
+            self.transaction.set_confirmed()
         return attrs

@@ -4,9 +4,7 @@ import coreschema
 import coreapi
 
 from django.db.models import Q
-from drf_yasg import openapi
 from rest_framework.filters import BaseFilterBackend
-
 
 
 class CustomFilterBackend(BaseFilterBackend):
@@ -25,7 +23,7 @@ class CustomFilterBackend(BaseFilterBackend):
             filters = Q()
             for field in filter_fields.keys():
                 if field in request.query_params:
-                    filters &= Q(field=request.query_params[field])
+                    filters &= Q(**{field: request.query_params[field]})
             return queryset.filter(filters)
 
     def get_schema_fields(self, view):

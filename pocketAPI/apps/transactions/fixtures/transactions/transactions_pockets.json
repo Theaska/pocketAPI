@@ -1,0 +1,170 @@
+[
+  {
+    "model": "accounts.user",
+    "pk": 1,
+    "fields": {
+      "username": "test",
+      "email": "test@test.com",
+      "password": "123"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "pk": 2,
+    "fields": {
+      "username": "test2",
+      "email": "test2@test.com",
+      "password": "123"
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "name": "test_1",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 1,
+    "fields": {
+      "pocket": 1,
+      "action": 1,
+      "sum": 100,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 2,
+    "fields": {
+      "pocket": 1,
+      "action": 1,
+      "status": 2,
+      "sum": 10000,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 3,
+    "fields": {
+      "pocket": 1,
+      "action": 2,
+      "status": 2,
+      "sum": 1000,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 3,
+    "fields": {
+      "pocket": 1,
+      "action": 2,
+      "status": 2,
+      "sum": 1000,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 4,
+    "fields": {
+      "pocket": 1,
+      "action": 2,
+      "status": 3,
+      "sum": 1000,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 5,
+    "fields": {
+      "pocket": 1,
+      "action": 2,
+      "status": 4,
+      "sum": 1000,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 6,
+    "fields": {
+      "pocket": 1,
+      "action": 2,
+      "status": 5,
+      "sum": 1000,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04"
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "name": "test_2",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00",
+      "is_archived": true
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 7,
+    "fields": {
+      "pocket": 2,
+      "action": 2,
+      "status": 1,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04",
+      "sum": 1000
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 3,
+    "fields": {
+      "user": 2,
+      "name": "test_3",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 8,
+    "fields": {
+      "pocket": 3,
+      "action": 2,
+      "status": 1,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04",
+      "sum": 300
+    }
+  },
+    {
+    "model": "transactions.pockettransaction",
+    "pk": 9,
+    "fields": {
+      "pocket": 3,
+      "action": 2,
+      "status": 2,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04",
+      "sum": 800
+    }
+  }
+]
