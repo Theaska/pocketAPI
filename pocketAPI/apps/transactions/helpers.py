@@ -11,12 +11,18 @@ from transactions.exceptions import TransactionError
 
 
 def save_confirmation_transaction_code(transaction_uuid, code):
+    """
+        Save code confirmation transaction in redis
+    """
     key = f'confirm-transaction:{transaction_uuid}:{settings.SECRET_KEY}'
     key_hash = hashlib.md5(key.encode('utf-8')).hexdigest()
     save_to_redis(key_hash, code, time=settings.VALIDATION_CODE_LIFETIME)
 
 
 def get_confirmation_transaction_code(transaction_uuid):
+    """
+        Get confirmation transactopn code from redis
+    """
     key = f'confirm-transaction:{transaction_uuid}:{settings.SECRET_KEY}'
     key_hash = hashlib.md5(key.encode('utf-8')).hexdigest()
     value = get_from_redis(key_hash)
@@ -53,6 +59,10 @@ class TransactionStatus(IntEnum):
 
 
 class StatusMixin(models.Model):
+    """
+        Mixin for working with statuses.
+        Created few methods for change statuses and check if status can changed.
+    """
     status = models.PositiveIntegerField(
         _('status'),
         choices=TransactionStatus.choices(),

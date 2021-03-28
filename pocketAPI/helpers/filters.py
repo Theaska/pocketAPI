@@ -14,14 +14,14 @@ class CustomFilterBackend(BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         """
-        Return a filtered queryset.
+            Return a filtered queryset.
         """
         filter_fields = getattr(view, 'filter_fields', {})
         if not filter_fields:
             return queryset
         else:
             filters = Q()
-            for field in filter_fields.keys():
+            for field, info in filter_fields.items():
                 if field in request.query_params:
                     filters &= Q(**{field: request.query_params[field]})
             return queryset.filter(filters)
@@ -40,7 +40,7 @@ class CustomFilterBackend(BaseFilterBackend):
 
         return [
             coreapi.Field(
-                name=field_values.get('display_name', field_key),
+                name=field_key,
                 location='query',
                 required=field_values.get('required', False),
                 type=field_values.get('type', 'string'),
@@ -49,6 +49,3 @@ class CustomFilterBackend(BaseFilterBackend):
                 schema=field_values.get('schema', None),
             ) for field_key, field_values in fields.items()
         ]
-
-    def get_schema_operation_parameters(self, view):
-        return []

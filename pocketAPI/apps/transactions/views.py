@@ -1,5 +1,4 @@
 import coreschema
-from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, mixins, status
 from rest_framework.generics import GenericAPIView
@@ -27,7 +26,6 @@ class TransactionViewSet(mixins.CreateModelMixin,
     lookup_url_kwarg = 'uuid'
     filter_fields = {
         'pocket__uuid': {
-            'display_name': 'pocket uuid',
             'description': 'uuid of pocket',
             'schema': coreschema.String(
                     pattern=r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}'

@@ -155,11 +155,33 @@
       "sum": 300
     }
   },
-    {
+  {
     "model": "transactions.pockettransaction",
     "pk": 9,
     "fields": {
       "pocket": 3,
+      "action": 2,
+      "status": 2,
+      "date_created": "2021-03-27 16:56:13.648492+04",
+      "date_updated": "2021-03-27 16:56:13.648492+04",
+      "sum": 800
+    }
+  },
+  {
+    "model": "pocket.pocket",
+    "pk": 4,
+    "fields": {
+      "user": 2,
+      "name": "test",
+      "date_created": "2021-03-24 08:00",
+      "date_updated": "2021-03-24 08:00"
+    }
+  },
+  {
+    "model": "transactions.pockettransaction",
+    "pk": 10,
+    "fields": {
+      "pocket": 4,
       "action": 2,
       "status": 2,
       "date_created": "2021-03-27 16:56:13.648492+04",

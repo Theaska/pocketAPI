@@ -1,4 +1,3 @@
-from enum import IntEnum
 import uuid
 
 from django.conf import settings
@@ -35,6 +34,9 @@ class TransactionQuerySet(models.QuerySet):
 
 
 class PocketTransaction(StatusMixin):
+    """
+        Model for pocket's transactions
+    """
     pocket = models.ForeignKey(Pocket, verbose_name=_('Pocket'), on_delete=models.CASCADE, related_name='transactions')
     uuid = models.UUIDField(_('UUID'), default=uuid.uuid4, unique=True)
     sum = models.FloatField(_('sum'), validators=[MinValueValidator(0), MaxValueValidator(100000)])
@@ -50,9 +52,14 @@ class PocketTransaction(StatusMixin):
 
     @transaction.atomic()
     def delete(self, using=None, keep_parents=False):
+        """
+            Delete transaction.
+            If status of transaction is not cancelled, then trying to cancel transaction
+            and only after success cancelling delete it.
+        """
         if self.status != TransactionStatus.CANCELLED:
             self.cancel()
-        self.delete(using, keep_parents)
+        super().delete(using, keep_parents)
 
     @property
     def action_name(self):
@@ -108,12 +115,18 @@ class PocketTransaction(StatusMixin):
                 self.pocket.debit(self.sum)
                 self.pocket.save()
             except ValueError:
-                raise TransactionError('Not enough money for refund.')
+                raise TransactionError('Not enough money for refund')
 
     @transaction.atomic()
     def cancel(self):
+        """
+            Cancel transaction.
+            If status of transaction is finished, then need to try to refund money (or refill).
+        """
         if self.status == TransactionStatus.FINISHED:
             self.refund()
+        if self.status == TransactionStatus.CANCELLED:
+            raise TransactionError('Transaction has already cancelled')
         self.set_cancelled()
         self.save()
 

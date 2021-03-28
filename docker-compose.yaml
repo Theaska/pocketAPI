@@ -1,0 +1,38 @@
+version: '3'
+services:
+  webapp:
+    build: .
+    entrypoint: >
+      bash -c "sleep 5s &&
+                chmod +x /app/prelaunch_script.sh &&
+                cat /app/prelaunch_script.sh | sed -i 's/\r//' /app/prelaunch_script.sh &&
+                /app/prelaunch_script.sh &&x
+                python3 /app/pocketAPI/manage.py collectstatic --noi &&
+                python3 /app/pocketAPI/manage.py runserver 0:80"
+    volumes:
+      - .:/app
+    env_file:
+      - .env.example
+    environment:
+      - DJANGO_SETTINGS_MODULE=project.api_settings
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+      - redis
+    tty: true
+    links:
+      - postgres:postgres
+      - redis:redis
+
+  postgres:
+    image: postgres:11-alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis
+    ports:
+    - "6379:6379"

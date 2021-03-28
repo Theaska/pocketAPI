@@ -72,7 +72,6 @@ class TokenGenerator:
         return jwt.decode(token, key=settings.SECRET_KEY, algorithms=(self.algorithm,))
 
     def get_payload(self) -> Dict[str, any]:
-        print(timezone.now() + timezone.timedelta(seconds=self.lifetime))
         return {
             'expired_time': (timezone.now() + timezone.timedelta(seconds=self.lifetime)).timestamp()
         }

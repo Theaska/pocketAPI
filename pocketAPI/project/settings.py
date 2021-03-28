@@ -29,7 +29,9 @@ SECRET_KEY = environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = environ.get('DEBUG')
 SITE_ID = 1
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '0.0.0.0',
+]
 
 
 # Application definition
@@ -93,11 +95,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': environ.get('DB_TABLE_NAME'),
-        'USER': environ.get('DB_TABLE_USER'),
-        'PASSWORD': environ.get('DB_TABLE_PASS'),
-        'HOST': environ.get('DB_HOST'),
-        'PORT': environ.get('DB_PORT')
+        'NAME': environ['DB_TABLE_NAME'],
+        'USER': environ['DB_TABLE_USER'],
+        'PASSWORD': environ['DB_TABLE_PASS'],
+        'HOST': environ['DB_HOST'],
+        'PORT': environ['DB_PORT']
     }
 }
 

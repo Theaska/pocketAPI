@@ -13,5 +13,4 @@ def get_from_redis(key):
     key = f'{settings.REDIS_PREFIX}-{key}'
     redis_instance = redis.StrictRedis(host=settings.REDIS_HOST,
                                        port=settings.REDIS_PORT)
-    print(redis_instance.keys('*'))
     return redis_instance.get(key)

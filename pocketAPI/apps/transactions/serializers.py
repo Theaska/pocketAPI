@@ -6,6 +6,9 @@ from transactions.models import PocketTransaction, ActionTransactions
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    """
+        Serializer for get/create new transactions.
+    """
     status = serializers.SerializerMethodField()
     uuid = serializers.UUIDField(read_only=True)
     action = serializers.ChoiceField(choices=ActionTransactions.choices(), default=ActionTransactions.REFILL,
@@ -38,6 +41,9 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class ConfirmTransactionSerializer(serializers.Serializer):
+    """
+        Serializer for confirm transaction with code.
+    """
     code = serializers.CharField()
 
     def __init__(self, transaction=None, *args, **kwargs):
