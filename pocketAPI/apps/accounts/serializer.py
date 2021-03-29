@@ -26,6 +26,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ResendEmailTokenSerializer(serializers.Serializer):
+    """
+        Serializer for resending email confirmation token
+    """
     username = serializers.CharField()
     password = serializers.CharField()
 
@@ -45,6 +48,9 @@ class ResendEmailTokenSerializer(serializers.Serializer):
 
 
 class EmailTokenSerializer(serializers.Serializer):
+    """
+        Serializer for confirm email with token
+    """
     token = serializers.CharField()
 
     def validate(self, attrs):
